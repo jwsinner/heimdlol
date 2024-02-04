@@ -15,34 +15,22 @@ defmodule Heimdlol.State.RateLimitTest do
       assert DateTime.compare(state.minute_reset, now) == :gt
     end
 
-    test "RateLimit start link has proper initializations" do
-      assert {:ok, pid} = RateLimit.start_link(nil)
-      assert Process.alive?(pid)
-      state = GenServer.call(pid, :get_state)
+    test "RateLimit function tests" do
+      state = RateLimit.get_state()
       assert state.per_second == 20
       assert state.per_two_minutes == 120
-    end
 
-    test "RateLimit can decrement" do
-      {:ok, pid} = RateLimit.start_link(nil)
-      state = GenServer.call(pid, :get_state)
-      assert state.per_second == 20
-      assert state.per_two_minutes == 120
-      state = GenServer.call(pid, :decrement)
+      RateLimit.decrement()
+      state = RateLimit.get_state()
       assert state.per_second == 19
       assert state.per_two_minutes == 119
-    end
 
-    test "RateLimit returns true if can request" do
-      assert {:ok, _pid} = RateLimit.start_link(nil)
       assert {:ok, true} = RateLimit.can_request?()
-    end
 
-    test "RateLimit returns false if too many decrements" do
-      {:ok, pid} = RateLimit.start_link(nil)
-      Enum.each(1..20, fn _ -> GenServer.call(pid, :decrement) end)
+
+      Enum.each(1..19, fn _ -> RateLimit.decrement() end)
       assert {:ok, %{wait: _}} = RateLimit.can_request?()
-      %{per_two_minutes: 100, per_second: 0} = GenServer.call(pid, :get_state)
+      %{per_two_minutes: 100, per_second: 0} = RateLimit.get_state()
     end
   end
 end

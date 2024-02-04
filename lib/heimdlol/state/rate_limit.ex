@@ -27,11 +27,12 @@ defmodule Heimdlol.State.RateLimit do
     {:reply, state, state}
   end
 
-  def handle_call(:decrement, _from, state) do
+  @impl true
+  def handle_cast(:decrement, state) do
     state
     |> Map.update(:per_second, 20, &(&1 - 1))
     |> Map.update(:per_two_minutes, 120, &(&1 - 1))
-    |> then(&{:reply, &1, &1})
+    |> then(&{:noreply, &1})
   end
 
   def get_state() do
@@ -39,7 +40,7 @@ defmodule Heimdlol.State.RateLimit do
   end
 
   def decrement() do
-    GenServer.call(__MODULE__, :decrement)
+    GenServer.cast(__MODULE__, :decrement)
   end
 
   def can_request?() do
