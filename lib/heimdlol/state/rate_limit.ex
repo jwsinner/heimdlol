@@ -1,12 +1,10 @@
-defmodule Heimdlol.RateLimit do
+defmodule Heimdlol.State.RateLimit do
   @moduledoc """
     A GenServer to manage requests available to avoid rate limit issues
   """
   use GenServer
 
-  @impl true
   def start_link(arg) do
-    IO.inspect(arg)
     GenServer.start_link(__MODULE__, arg, name: __MODULE__)
   end
 
@@ -24,6 +22,7 @@ defmodule Heimdlol.RateLimit do
      }}
   end
 
+  @impl true
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
   end
@@ -51,7 +50,7 @@ defmodule Heimdlol.RateLimit do
         {:ok, true}
 
       state.per_second <= 0 and state.per_two_minutes > 0 ->
-        state.second_rest
+        state.second_reset
         |> DateTime.add(1, :second)
         |> DateTime.diff(DateTime.utc_now(), :millisecond)
         |> then(&{:ok, %{wait: &1}})
@@ -65,6 +64,7 @@ defmodule Heimdlol.RateLimit do
     end
   end
 
+  @impl true
   def handle_info({:reset, :per_second}, state) do
     schedule_per_second_reset()
     state

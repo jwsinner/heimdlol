@@ -5,11 +5,14 @@ defmodule Heimdlol.Application do
 
   use Application
 
+  alias Heimdlol.State.RateLimit
+
   @impl true
   def start(_type, _args) do
     children = [
       {Finch, name: FinchMonitor},
-      {Registry, keys: :unique, name: LolMonitor.Registry},
+      RateLimit,
+      {Registry, keys: :unique, name: Heimdlol.Registry},
       {DynamicSupervisor, name: Heimdlol.SummonersSupervisor, strategy: :one_for_one}
     ]
 

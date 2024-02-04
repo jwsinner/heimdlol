@@ -15,7 +15,7 @@ defmodule Heimdlol.SummonersSupervisor do
 
   def start_child(puuid, name, region) do
     {:ok, pid} =
-      DynamicSupervisor.start_child(__MODULE__, {Summoners, {puuid, region}})
+      DynamicSupervisor.start_child(__MODULE__, {Summoners, {puuid, name, region}})
 
     GenServer.call(pid, :get_name)
   end
