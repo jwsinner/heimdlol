@@ -2,7 +2,6 @@ defmodule Heimdlol.Api.MatchTest do
   @moduledoc false
   use ExUnit.Case, async: true
 
-  alias Heimdlol.Api.Client
   alias Heimdlol.Api.Match
 
   @moduletag :capture_log

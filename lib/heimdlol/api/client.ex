@@ -7,6 +7,20 @@ defmodule Heimdlol.Api.Client do
   plug(Tesla.Middleware.Headers, [{"X-Riot-Token", Application.get_env(:heimdlol, :api_key)}])
   adapter(Tesla.Adapter.Finch, name: FinchMonitor)
 
+  alias Heimdlol.State.RateLimit
+
+  def client_get(%URI{} = uri) do
+    if RateLimit.can_request?() do
+      RateLimit.decrement()
+      uri
+      |> URI.to_string()
+      |> get()
+      |> handle_response()
+    else
+      {:error, "Rate limit exceeded"}
+    end
+  end
+
   @spec handle_response({:ok, Tesla.Env.t()}) :: {:ok, map()} | {:error, String.t()}
   def handle_response({:ok, %Tesla.Env{status: 200, body: body}}) do
     Jason.decode(body)

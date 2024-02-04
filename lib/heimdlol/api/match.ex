@@ -3,7 +3,7 @@ defmodule Heimdlol.Api.Match do
    Functions to handle requests to the Riot Games API for match data
   """
 
-  alias Heimdlol.Api.Client
+  import Heimdlol.Api.Client
 
   @americas ~w(BR1 LA1 LA2 NA1)
   @asia ~w(JP1 KR)
@@ -20,9 +20,8 @@ defmodule Heimdlol.Api.Match do
     |> URI.append_path("/match/v5/matches/by-puuid/{account_id}/ids")
     |> set_account_id(account_id)
     |> URI.append_query("start=0&count=#{limit}")
-    |> URI.to_string()
-    |> Client.get()
-    |> Client.handle_response()
+    |> IO.inspect()
+    |> client_get()
   end
 
   @spec get_match(String.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
@@ -31,9 +30,7 @@ defmodule Heimdlol.Api.Match do
     |> add_region(region)
     |> URI.append_path("/match/v5/matches/{match_id}")
     |> set_match_id(match_id)
-    |> URI.to_string()
-    |> Client.get()
-    |> Client.handle_response()
+    |> client_get()
   end
 
   defp add_region(base_url, region) do
