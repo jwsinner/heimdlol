@@ -8,8 +8,9 @@ defmodule Heimdlol.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: Heimdlol.Worker.start_link(arg)
-      # {Heimdlol.Worker, arg}
+      {Finch, name: FinchMonitor},
+      {Registry, keys: :unique, name: LolMonitor.Registry},
+      {DynamicSupervisor, name: Heimdlol.SummonersSupervisor, strategy: :one_for_one}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
