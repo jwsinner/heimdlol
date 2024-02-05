@@ -12,7 +12,7 @@ defmodule Heimdlol.Service.Observe do
     |> Flow.from_enumerable()
     |> Flow.map(&Match.get_match(&1, region))
     |> Flow.flat_map(fn {:ok, %{"info" => %{"participants" => participants}}} ->
-      participants |> IO.inspect(label: "participants")
+      participants
     end)
     |> Flow.reduce(fn -> MapSet.new() end, fn %{"puuid" => puuid, "summonerName" => name}, set ->
       MapSet.put(set, %{puuid: puuid, name: name, region: region})
