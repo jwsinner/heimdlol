@@ -30,8 +30,8 @@ defmodule Heimdlol.State.RateLimit do
   @impl true
   def handle_cast(:decrement, state) do
     state
-    |> Map.update(:per_second, 20, &(&1 - 1))
-    |> Map.update(:per_two_minutes, 120, &(&1 - 1))
+    |> Map.update(:per_second, 20, &max(&1 - 1, 0))
+    |> Map.update(:per_two_minutes, 120, &max(&1 - 1, 0))
     |> then(&{:noreply, &1})
   end
 
@@ -54,20 +54,23 @@ defmodule Heimdlol.State.RateLimit do
         state.second_reset
         |> DateTime.add(1, :second)
         |> DateTime.diff(DateTime.utc_now(), :millisecond)
-        |> then(&{:ok, %{wait: &1}})
+        |> then(&{:ok, %{wait: max(&1, 0)}})
 
-      state[:per_two_minutes] <= 0 ->
+      state.per_two_minutes <= 0 ->
         state.minute_reset
         |> DateTime.add(2, :minute)
         |> DateTime.diff(DateTime.utc_now(), :millisecond)
-        |> then(&{:ok, %{wait: &1}})
-      true -> {:error, :unknown}
+        |> then(&{:ok, %{wait: max(&1, 0)}})
+
+      true ->
+        {:error, :unknown}
     end
   end
 
   @impl true
   def handle_info({:reset, :per_second}, state) do
     schedule_per_second_reset()
+
     state
     |> Map.put(:per_second, 20)
     |> Map.put(:second_reset, DateTime.utc_now())
@@ -76,6 +79,7 @@ defmodule Heimdlol.State.RateLimit do
 
   def handle_info({:reset, :per_two_minutes}, state) do
     schedule_per_two_minutes_reset()
+
     state
     |> Map.put(:per_two_minutes, 120)
     |> Map.put(:minute_reset, DateTime.utc_now())

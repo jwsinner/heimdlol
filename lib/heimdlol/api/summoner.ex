@@ -12,7 +12,7 @@ defmodule Heimdlol.Api.Summoner do
   @spec get_by_name_and_region(String.t(), String.t()) :: {:ok, map()} | {:error, String.t()}
   def get_by_name_and_region(name, region)
       when region in @regions_upper or
-           region in @regions_lower do
+             region in @regions_lower do
     @base_uri
     |> add_region(region)
     |> URI.append_path("/summoner/v4/summoners/by-name/encoded_name")

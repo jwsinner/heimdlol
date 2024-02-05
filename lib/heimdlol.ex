@@ -1,18 +1,12 @@
 defmodule Heimdlol do
   @moduledoc """
-  Documentation for `Heimdlol`.
+    Heimdlol (Heimdall for LoL) is a library for interacting with a very small bit the Riot Games API.
+    Given a valid summoner name, we can see the players who were part of the last
+    five matches that summoner played. We'll also get messages logged to the console
+    when any of those summoners completes a match.
   """
 
-  @doc """
-  Hello world.
+  alias Heimdlol.Service.Observe
 
-  ## Examples
-
-      iex> Heimdlol.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
+  defdelegate observe(name, region), to: Observe
 end

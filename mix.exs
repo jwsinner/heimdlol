@@ -25,7 +25,8 @@ defmodule Heimdlol.MixProject do
       {:tesla, "~> 1.8"},
       {:finch, "~> 0.17"},
       {:jason, "~> 1.4.0"},
-      {:flow, "~> 1.2.4"}
+      {:flow, "~> 1.2.4"},
+      {:mimic, "~> 1.7.0"}
     ]
   end
 end

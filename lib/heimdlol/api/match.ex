@@ -20,7 +20,6 @@ defmodule Heimdlol.Api.Match do
     |> URI.append_path("/match/v5/matches/by-puuid/{account_id}/ids")
     |> set_account_id(account_id)
     |> URI.append_query("start=0&count=#{limit}")
-    |> IO.inspect()
     |> client_get()
   end
 
@@ -38,13 +37,13 @@ defmodule Heimdlol.Api.Match do
     |> String.upcase()
     |> get_region()
     |> case do
-         {:error, _} ->
-           {:error, "Invalid region: #{region}"}
+      {:error, _} ->
+        {:error, "Invalid region: #{region}"}
 
-         region ->
-           host = String.replace(base_url.host, "region", region)
-           %{base_url | host: host}
-       end
+      region ->
+        host = String.replace(base_url.host, "region", region)
+        %{base_url | host: host}
+    end
   end
 
   defp get_region(region) do

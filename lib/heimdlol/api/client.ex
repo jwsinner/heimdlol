@@ -9,15 +9,24 @@ defmodule Heimdlol.Api.Client do
 
   alias Heimdlol.State.RateLimit
 
+  require Logger
+
   def client_get(%URI{} = uri) do
-    if RateLimit.can_request?() do
-      RateLimit.decrement()
-      uri
-      |> URI.to_string()
-      |> get()
-      |> handle_response()
-    else
-      {:error, "Rate limit exceeded"}
+    case RateLimit.can_request?() do
+      {:ok, true} ->
+        RateLimit.decrement()
+
+        uri
+        |> URI.to_string()
+        |> get()
+        |> handle_response()
+
+      {:ok, %{wait: wait}} ->
+        Logger.warning("Rate limit exceeded, waiting for #{wait}ms")
+        {:error, %{retry_after: wait}}
+
+      error ->
+        error
     end
   end
 

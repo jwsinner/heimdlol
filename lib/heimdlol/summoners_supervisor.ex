@@ -4,6 +4,8 @@ defmodule Heimdlol.SummonersSupervisor do
   """
   use DynamicSupervisor
 
+  alias Heimdlol.State.Summoner
+
   def start_link(arg) do
     Supervisor.start_link(__MODULE__, arg, name: __MODULE__)
   end
@@ -13,10 +15,7 @@ defmodule Heimdlol.SummonersSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def start_child(puuid, name, region) do
-    {:ok, pid} =
-      DynamicSupervisor.start_child(__MODULE__, {Summoners, {puuid, name, region}})
-
-    GenServer.call(pid, :get_name)
+  def start_child(summoner) do
+    DynamicSupervisor.start_child(__MODULE__, {Summoner, summoner})
   end
 end

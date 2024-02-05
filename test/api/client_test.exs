@@ -7,14 +7,24 @@ defmodule Heimdlol.Api.ClientTest do
 
   describe "Client tests" do
     setup do
-      good_response = {:ok, %Tesla.Env{status: 200, body: """
-        {
-          "data": "good data"
-        }
-      """}}
+      good_response =
+        {:ok,
+         %Tesla.Env{
+           status: 200,
+           body: """
+             {
+               "data": "good data"
+             }
+           """
+         }}
+
       bad_response = {:ok, %Tesla.Env{status: 400, body: "Bad body"}}
       rate_limit_response = {:ok, %Tesla.Env{status: 429, headers: [{"retry-after", "5"}]}}
-      {:ok, good_response: good_response, bad_response: bad_response, rate_limit_response: rate_limit_response}
+
+      {:ok,
+       good_response: good_response,
+       bad_response: bad_response,
+       rate_limit_response: rate_limit_response}
     end
 
     test "handle_response returns ok tuple with 200 status", %{good_response: good_response} do
@@ -27,7 +37,9 @@ defmodule Heimdlol.Api.ClientTest do
       assert message == "400 error: \"Bad body\""
     end
 
-    test "handle_response returns error tuple with 429 status", %{rate_limit_response: rate_limit_response} do
+    test "handle_response returns error tuple with 429 status", %{
+      rate_limit_response: rate_limit_response
+    } do
       assert {:error, %{retry_after: 5}} = Client.handle_response(rate_limit_response)
     end
 

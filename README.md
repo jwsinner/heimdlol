@@ -1,22 +1,19 @@
 # Heimdlol
 
-**TODO: Add description**
+A small observer of player's matches in League of Legends.
 
-## Installation
+With a single entry point: `Heimdlol.observer/2` you will get a list of the most
+recent summoners the summoner you entered has played with and against in the last 5 matches. While the list of summoners
+is being built, GenServers will be started to monitor each summoner found. For one hour, each GenServer will poll the API
+every minute to see if a new match has been completed, if so, it will log a message to the console.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `heimdlol` to your list of dependencies in `mix.exs`:
+## Setup
+You can set an environment variable `RIOT_KEY` to your own Riot API key or update the default value in `config.exs`.
 
+Run `mix deps.get` to install dependencies. Then `iex -S mix` to start the application.
+
+## Usage
 ```elixir
-def deps do
-  [
-    {:heimdlol, "~> 0.1.0"}
-  ]
-end
+Heimdlol.observe("summonerName", "region") # The region here is not case sensitive, so NA1 and na1 are both valid.
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/heimdlol>.
-
-# repo
